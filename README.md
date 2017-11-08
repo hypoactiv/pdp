@@ -1,7 +1,9 @@
-#PDP - Pocket Data Pigeon
+# PDP - Pocket Data Pigeon
+
 PDP is an Arduino firmware that can automatically send and receive files over inexpensive NRF24L01+ radios. The files are sent from, or downloaded to, an SD card. PDP supports chunking of files and secure peer-to-peer exchange of chunks, similar to BitTorrent. Chunk integrity is ensured with [Merkle trees](https://en.wikipedia.org/wiki/Merkle_tree) and SHA256 sums via the [usha256](https://github.com/hypoactiv/usha256) library.
 
 ## Limitations
+
 PDP is currently limited to small files (768KiB maximum) due to the small RAM limit of the ATmega MCU. Files over this limit are ignored and not broadcast. Transmission rates are also relatively slow. However, it is fit for the purpose of transmitting text files and small images.
 
 ## Parts List
@@ -59,6 +61,7 @@ to compile PDP using the included [Arduino makefile](https://github.com/sudar/Ar
 If you choose to compile using the Arduino workspace or any other method, make sure to disable LTO (link time optimization) as it breaks this project and will generate a broken binary.
 
 ## Usage
+
 * Format both SD cards as FAT32.
 * Place some files in the root of one SD card, insert it into one of the PDP units, and power it on.
 * Leave the second SD card empty, insert it into the second unit, and power it on.
