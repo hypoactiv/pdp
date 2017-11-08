@@ -1,0 +1,113 @@
+<h1 id="pdp---pocket-data-pigeon">PDP - Pocket Data Pigeon</h1>
+<p>PDP is an Arduino firmware that can automatically send and receive files over inexpensive NRF24L01+ radios. The files are sent from, or downloaded to, an SD card. PDP supports chunking of files and secure peer-to-peer exchange of chunks, similar to BitTorrent. Chunk integrity is ensured with <a href="https://en.wikipedia.org/wiki/Merkle_tree">Merkle trees</a> and SHA256 sums via the <a href="https://github.com/hypoactiv/usha256">usha256</a> library.</p>
+<h2 id="limitations">Limitations</h2>
+<p>PDP is currently limited to small files (768KiB maximum) due to the small RAM limit of the ATmega MCU. Files over this limit are ignored and not broadcast. Transmission rates are also relatively slow. However, it is fit for the purpose of transmitting text files and small images.</p>
+<h2 id="parts-list">Parts List</h2>
+<p>You will want to build at least 2 PDPs, so that they can talk to eachother.</p>
+<ul>
+<li>2x Arduino with ATmega328 MCU. Arduino Uno or Arduino Pro Mini (328) are most common.</li>
+<li>2x NRF24L01+ radio modules</li>
+<li>2x SD card modules. If you wish to power the SD card with 5v, make sure you buy modules with power regulators built in.</li>
+<li>2x SD cards</li>
+<li>2x USB power supplies, or other power supply for your Arduinos</li>
+</ul>
+<h2 id="connecting-the-nrf24l01">Connecting the NRF24L01+</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Radio Pin</th>
+<th>Arduino Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>V+</td>
+<td>3.3v</td>
+</tr>
+<tr class="even">
+<td>GND</td>
+<td>GND</td>
+</tr>
+<tr class="odd">
+<td>CSN</td>
+<td>7</td>
+</tr>
+<tr class="even">
+<td>CE</td>
+<td>6</td>
+</tr>
+<tr class="odd">
+<td>MOSI</td>
+<td>11</td>
+</tr>
+<tr class="even">
+<td>MISO</td>
+<td>12</td>
+</tr>
+<tr class="odd">
+<td>SCK</td>
+<td>13</td>
+</tr>
+</tbody>
+</table>
+<h2 id="connecting-the-sd-card-module">Connecting the SD card module</h2>
+<table>
+<thead>
+<tr class="header">
+<th>SD Pin</th>
+<th align="center">Arduino Pin</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>CS</td>
+<td align="center">A0</td>
+</tr>
+<tr class="even">
+<td>SCK</td>
+<td align="center">A1</td>
+</tr>
+<tr class="odd">
+<td>MOSI</td>
+<td align="center">A2</td>
+</tr>
+<tr class="even">
+<td>MISO</td>
+<td align="center">A3</td>
+</tr>
+<tr class="odd">
+<td>VCC</td>
+<td align="center">3.3v or 5v depending on SD module</td>
+</tr>
+<tr class="even">
+<td>GND</td>
+<td align="center">GND</td>
+</tr>
+</tbody>
+</table>
+<h2 id="compiling">Compiling</h2>
+<p>Make sure you have SdFat and RF24 libraries installed in your Arduino workspace. PDP uses software SPI to communicate with the SD card, which needs to be manually enabled in SdFat's <code>SdFatConfig.h</code> by changing the line</p>
+<pre><code>#define ENABLE_SOFTWARE_SPI_CLASS 0</code></pre>
+<p>to</p>
+<pre><code>#define ENABLE_SOFTWARE_SPI_CLASS 1</code></pre>
+<p>After this, run</p>
+<pre><code>make</code></pre>
+<p>to compile PDP using the included <a href="https://github.com/sudar/Arduino-Makefile">Arduino makefile</a>.</p>
+<p>If you choose to compile using the Arduino workspace or any other method, make sure to disable LTO (link time optimization) as it breaks this project and will generate a broken binary.</p>
+<h2 id="usage">Usage</h2>
+<ul>
+<li>Format both SD cards as FAT32.</li>
+<li>Place some files in the root of one SD card, insert it into one of the PDP units, and power it on.</li>
+<li>Leave the second SD card empty, insert it into the second unit, and power it on.</li>
+<li>After computing the Merkle trees for the files placed in the SD card root, they will be broadcast.</li>
+<li>You can monitor the progress on the Arduino serial terminal. Once the files have been received, you can power down the units and verify file integrity.</li>
+</ul>
+<h2 id="todo">TODO</h2>
+<p>PDP is still in its early stages. Many things need to be done to make it more user friendly and robust.</p>
+<ul>
+<li>Implement 1 or more status LEDs to report progress without the serial terminal.</li>
+<li>Better interference detection and channel hopping.</li>
+<li>An Arduino shield PCB to ease assembly and improve physical durability.</li>
+<li>Document wireless protocol</li>
+<li>Test with more than 3 units to test and improve chunk exchange algorithms.</li>
+</ul>
